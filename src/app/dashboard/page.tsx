@@ -9,11 +9,15 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { BadgePlus } from 'lucide-react';
+import { BadgePlus } from "lucide-react";
 import Link from "next/link";
+import { db } from "@/db";
+import { Invoices } from "@/db/schema";
 
+export default async function page() {
+    const results = await db.select().from(Invoices);
+    console.log(results);
 
-export default function page() {
     return (
         <main className="flex flex-col items-center justify-center gap-6 h-full  max-w-5xl mx-auto my-12">
             <div className="flex justify-between items-center  w-full">
@@ -21,7 +25,8 @@ export default function page() {
                 <p>
                     <Button variant="ghost" className="inline-flex gap-2" asChild>
                         <Link href="/invoices/new">
-                            <BadgePlus className="h-4 w-4 " />Create Invoices
+                            <BadgePlus className="h-4 w-4 " />
+                            Create Invoices
                         </Link>
                     </Button>
                 </p>
@@ -38,25 +43,48 @@ export default function page() {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    <TableRow>
-                        <TableCell className="font-medium text-left p-4">
-                            <span className="font-semibold">07/JULY/2025</span>
-                        </TableCell>
-                        <TableCell className="text-left p-4">
-                            <span className="font-semibold">Sameer Suryawanshi</span>
-                        </TableCell>
-                        <TableCell className="text-left p-4">
-                            <span className="">harsh@gmail.com</span>
-                        </TableCell>
-                        <TableCell className="text-center p-4">
-                            <Badge className="rounded-full">Open</Badge>
-                        </TableCell>
-                        <TableCell className="text-right p-4">
-                            <span className="font-semibold">$250.00</span>
-                        </TableCell>
-                    </TableRow>
+                    {results.map((result) => {
+                        return (
+                            <TableRow key={result.id}>
+                                <TableCell className="font-medium text-left p-0">
+                                    <Link
+                                        href={`/invoices/${result.id}`}
+                                        className="font-semibold block  p-4"
+                                    >
+                                        {new Date(result.createTs).toLocaleDateString()}
+                                    </Link>
+                                </TableCell>
+                                <TableCell className="text-left p-0">
+                                    <Link
+                                        href={`/invoices/${result.id}`}
+                                        className="font-semibold block p-4"
+                                    >
+                                        Sameer Suryawanshi
+                                    </Link>
+                                </TableCell>
+                                <TableCell className="text-left p-0 ">
+                                    <Link href={`/invoices/${result.id}`} className="block p-4">
+                                        harsh@gmail.com
+                                    </Link>
+                                </TableCell>
+                                <TableCell className="text-center p-0">
+                                    <Link href={`/invoices/${result.id}`} className="block p-4">
+                                        <Badge className="rounded-full  ">{result.status}</Badge>
+                                    </Link>
+                                </TableCell>
+                                <TableCell className="text-right p-0">
+                                    <Link
+                                        href={`/invoices/${result.id}`}
+                                        className="font-semibold block  p-4"
+                                    >
+                                        ${result.value / 100}
+                                    </Link>
+                                </TableCell>
+                            </TableRow>
+                        );
+                    })}
                 </TableBody>
             </Table>
-        </main >
+        </main>
     );
 }
