@@ -1,5 +1,11 @@
-import { pgTable } from "drizzle-orm/pg-core";
+import { integer, pgEnum, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
 
-export const Invoices = pgTable('invoice',{
+export const statusEnum = pgEnum('status', ['open', 'paid', 'void', 'uncollectible']);
 
-})
+export const Invoices = pgTable("invoice", {
+  id: serial('id').primaryKey().notNull(),
+  createTs: timestamp('createTs').defaultNow().notNull(),
+  value: integer('value').notNull(),
+  description: text('description').notNull(),
+  status: statusEnum('status'),
+});
