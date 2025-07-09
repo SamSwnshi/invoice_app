@@ -1,13 +1,17 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
-const isProtected = createRouteMatcher([
-  '/dashboard',
-  '/invoices/:invoiceId',
-  '/invoices/new', 
+const isPublic = createRouteMatcher([
+  '/',
+  
 ]);
+// const isProtected = createRouteMatcher([
+//   '/dashboard',
+//   '/invoices/:invoiceId',
+//   '/invoices/new', 
+// ]);
 
 export default clerkMiddleware(async (auth, request) => {
-  if (isProtected(request)) {
+  if (!isPublic(request)) {
     await auth.protect();
   }
 });
