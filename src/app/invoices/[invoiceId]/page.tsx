@@ -1,3 +1,4 @@
+import { notFound } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { db } from "@/db";
 import { Invoices } from "@/db/schema";
@@ -10,14 +11,19 @@ export default async function InvoicePage({
   params: { invoiceId: string };
 }) {
   const invoiceId = Number.parseInt(params.invoiceId);
+  
   const [result] = await db
     .select()
     .from(Invoices)
     .where(eq(Invoices.id, invoiceId))
     .limit(1);
 
+    if(!result){
+        notFound()
+    }
+
   return (
-    <main className="    h-full  max-w-5xl mx-auto my-12">
+    <main className="h-full  max-w-5xl mx-auto my-12">
       <div className="flex justify-between items-center mb-8  w-full">
         <h1 className="text-3xl font-semibold  flex items-center gap-6">
           Invoice {invoiceId}
