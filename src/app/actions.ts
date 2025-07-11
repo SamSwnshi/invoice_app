@@ -6,7 +6,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
 
 export async function createAction(formData: FormData) {
-  const {userId} = auth();
+  const {userId} = await auth();
   const value = Math.floor(parseFloat(String(formData.get("value"))) * 100);
   const description = formData.get("description") as string;
 
@@ -17,6 +17,7 @@ export async function createAction(formData: FormData) {
     .insert(Invoices)
     .values({
       value,
+      userId,
       description,
       status: "open",
     })

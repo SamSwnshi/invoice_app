@@ -10,7 +10,8 @@ export default async function InvoicePage({
 }: {
   params: { invoiceId: string };
 }) {
-  const invoiceId = Number.parseInt(params.invoiceId);
+  const awaitedParams = await params;
+  const invoiceId = Number.parseInt(awaitedParams.invoiceId);
   
   const [result] = await db
     .select()

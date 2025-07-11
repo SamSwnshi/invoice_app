@@ -1,24 +1,13 @@
 "use client";
 
-import { SyntheticEvent, useState, startTransition } from "react";
+import React from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { createAction } from "@/app/actions";
 import SubmitButton from "@/components/SubmitButton";
 import Container from "@/components/Container";
-import Form from "next/form";
 export default function Home() {
-    const [state, setState] = useState("ready");
-
-    async function handleSubmit(e: SyntheticEvent) {
-        if (state === "pending") {
-            e.preventDefault();
-            return;
-        }
-        setState("pending");
-    }
-
     return (
         <main className=" h-full">
             <Container>
@@ -27,9 +16,8 @@ export default function Home() {
                     Create a New Invoice
                 </h1>
             </div>
-            <Form
+            <form
                 action={createAction}
-                onSubmit={handleSubmit}
                 className=" grid gap-4 max-w-md"
             >
                 <div className="mb-2">
@@ -62,7 +50,7 @@ export default function Home() {
                 <div>
                     <SubmitButton />
                 </div>
-            </Form>
+            </form>
             </Container>
         </main>
     );
