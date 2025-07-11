@@ -1,3 +1,5 @@
+import {auth} from '@clerk/nextjs/server';
+import {eq} from 'drizzle-orm'
 import {
     Table,
     TableBody,
@@ -17,7 +19,13 @@ import { cn } from "@/lib/utils";
 import Container from "@/components/Container";
 
 export default async function page() {
-    const results = await db.select().from(Invoices);
+    const { userId } = await auth();
+    if(!userId) return;
+
+    const results = await db.select()
+    .from(Invoices)
+    .where(eq(Invoices.userId,userId))
+
 
 
     return (

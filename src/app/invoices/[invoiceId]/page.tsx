@@ -3,20 +3,23 @@ import { Badge } from "@/components/ui/badge";
 import { db } from "@/db";
 import { Invoices } from "@/db/schema";
 import { cn } from "@/lib/utils";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
+import { auth } from "@clerk/nextjs/server";
 
 export default async function InvoicePage({
   params,
 }: {
   params: { invoiceId: string };
 }) {
+  const {userId} = await auth();
+  if( !userId) return;
   const awaitedParams = await params;
   const invoiceId = Number.parseInt(awaitedParams.invoiceId);
   
   const [result] = await db
     .select()
     .from(Invoices)
-    .where(eq(Invoices.id, invoiceId))
+    .where(and(eq(Invoices.id, invoiceId),eq(Invoices.userId,userId)))
     .limit(1);
 
     if(!result){
