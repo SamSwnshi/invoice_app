@@ -13,9 +13,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-
+import { Ellipsis } from 'lucide-react';
 import { AVAILABLE_STATUSES } from "@/data/invoices";
-import { updateStatusAction } from "@/app/actions";
+import { updateStatusAction ,deleteInvoiceActions} from "@/app/actions";
 
 interface InvoiceProps {
   invoice: typeof Invoices.$inferSelect;
@@ -37,6 +37,7 @@ export default function Invoice({ invoice }: InvoiceProps) {
       setCurrentStatus(originalStatus)
     }
   }
+ 
   return (
     <main className="w-full h-full">
       <Container>
@@ -55,26 +56,49 @@ export default function Invoice({ invoice }: InvoiceProps) {
               {currentStatus}
             </Badge>
           </h1>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button className="flex items-center gap-2" variant="outline">
-                Change Status <ChevronDown className="w-4 h-auto" />{" "}
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              {AVAILABLE_STATUSES.map((status) => {
-                return (
-                  <DropdownMenuItem key={status.id}>
-                    <form action={handleOnUpdateStatus}>
-                      <input type="hidden" name="id" value={invoice.id} />
-                      <input type="hidden" name="status" value={status.id} />
-                      <button>{status.label}</button>
-                    </form>
-                  </DropdownMenuItem>
-                );
-              })}
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="flex gap-4">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button className="flex items-center gap-2" variant="outline">
+                  Change Status <ChevronDown className="w-4 h-auto" />{" "}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                {AVAILABLE_STATUSES.map((status) => {
+                  return (
+                    <DropdownMenuItem key={status.id}>
+                      <form action={handleOnUpdateStatus}>
+                        <input type="hidden" name="id" value={invoice.id} />
+                        <input type="hidden" name="status" value={status.id} />
+                        <button>{status.label}</button>
+                      </form>
+                    </DropdownMenuItem>
+                  );
+                })}
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button className="flex items-center gap-2" variant="outline">
+                  <span className="sr-only">
+                    More Option
+                  </span>
+                  <Ellipsis />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+
+                <DropdownMenuItem >
+                  <form action={deleteInvoiceActions}>
+                    <input type="hidden" name="id" value={invoice.id} />
+
+                    <button>Delete Invoice</button>
+                  </form>
+                </DropdownMenuItem>
+
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
         <p className="text-3xl mb-3">${invoice.value / 100}</p>
         <p className="text-lg mb-8">{invoice.description.toUpperCase()}</p>
