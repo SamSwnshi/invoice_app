@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Invoices } from "@/db/schema";
 import { cn } from "@/lib/utils";
 import Container from "@/components/Container";
-import { ChevronDown } from "lucide-react";
+import { Bomb, ChevronDown } from "lucide-react";
 import { useOptimistic } from "react";
 import {
   DropdownMenu,
@@ -13,9 +13,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Ellipsis } from 'lucide-react';
+import { Ellipsis } from "lucide-react";
 import { AVAILABLE_STATUSES } from "@/data/invoices";
-import { updateStatusAction ,deleteInvoiceActions} from "@/app/actions";
+import { updateStatusAction, deleteInvoiceActions } from "@/app/actions";
 
 interface InvoiceProps {
   invoice: typeof Invoices.$inferSelect;
@@ -30,14 +30,14 @@ export default function Invoice({ invoice }: InvoiceProps) {
 
   async function handleOnUpdateStatus(formData: FormData) {
     const originalStatus = currentStatus;
-    setCurrentStatus(formData.get('status'))
+    setCurrentStatus(formData.get("status"));
     try {
-      await updateStatusAction(formData)
+      await updateStatusAction(formData);
     } catch (error) {
-      setCurrentStatus(originalStatus)
+      setCurrentStatus(originalStatus);
     }
   }
- 
+
   return (
     <main className="w-full h-full">
       <Container>
@@ -80,22 +80,19 @@ export default function Invoice({ invoice }: InvoiceProps) {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button className="flex items-center gap-2" variant="outline">
-                  <span className="sr-only">
-                    More Option
-                  </span>
+                  <span className="sr-only">More Option</span>
                   <Ellipsis />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-
-                <DropdownMenuItem >
+                <DropdownMenuItem>
                   <form action={deleteInvoiceActions}>
                     <input type="hidden" name="id" value={invoice.id} />
-
-                    <button>Delete Invoice</button>
+                    <button className="flex gap-2 items-center">
+                      Delete Invoice <Bomb className="w-4 h-auto" />
+                    </button>
                   </form>
                 </DropdownMenuItem>
-
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
