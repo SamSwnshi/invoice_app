@@ -16,7 +16,15 @@ import { Button } from "@/components/ui/button";
 import { Ellipsis } from "lucide-react";
 import { AVAILABLE_STATUSES } from "@/data/invoices";
 import { updateStatusAction, deleteInvoiceActions } from "@/app/actions";
-
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 interface InvoiceProps {
   invoice: typeof Invoices.$inferSelect;
 }
@@ -77,24 +85,45 @@ export default function Invoice({ invoice }: InvoiceProps) {
                 })}
               </DropdownMenuContent>
             </DropdownMenu>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button className="flex items-center gap-2" variant="outline">
-                  <span className="sr-only">More Option</span>
-                  <Ellipsis />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem>
-                  <form action={deleteInvoiceActions}>
-                    <input type="hidden" name="id" value={invoice.id} />
-                    <button className="flex gap-2 items-center">
-                      Delete Invoice <Bomb className="w-4 h-auto" />
-                    </button>
-                  </form>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <Dialog>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button className="flex items-center gap-2" variant="outline">
+                    <span className="sr-only">More Option</span>
+                    <Ellipsis />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem>
+                    <DialogTrigger asChild>
+                      <button className="flex gap-2 items-center">
+                        Delete Invoice <Bomb className="w-4 h-auto" />
+                      </button>
+                    </DialogTrigger>
+
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              <DialogContent className="bg-white">
+                <DialogHeader >
+                  <DialogTitle className="text-2xl">Are you absolutely sure?</DialogTitle>
+                  <DialogDescription>
+                    This action cannot be undone. This will permanently delete your account
+                    and remove your data from our servers.
+                  </DialogDescription>
+                  <DialogFooter>
+                    <form className="flex justify-center" action={deleteInvoiceActions}>
+                      <input type="hidden" name="id" value={invoice.id} />
+                      <Button variant='destructive' className="flex gap-2 items-center">
+                        Delete Invoice <Bomb className="w-4 h-auto" />
+                      </Button>
+                    </form>
+                  </DialogFooter>
+                </DialogHeader>
+              </DialogContent>
+            </Dialog>
+
           </div>
         </div>
         <p className="text-3xl mb-3">${invoice.value / 100}</p>
