@@ -1,5 +1,5 @@
-import { auth } from '@clerk/nextjs/server';
-import { eq } from 'drizzle-orm'
+import { auth } from "@clerk/nextjs/server";
+import { and, eq, isNull } from "drizzle-orm";
 import {
     Table,
     TableBody,
@@ -19,21 +19,32 @@ import { cn } from "@/lib/utils";
 import Container from "@/components/Container";
 
 export default async function page() {
-    const { userId } = await auth();
+    const { userId, orgId } = await auth();
     if (!userId) return;
 
-    const results = await db.select()
-        .from(Invoices)
-        .innerJoin(Customers, eq(Invoices.customerId, Customers.id))
-        .where(eq(Invoices.userId, userId))
+    let results;
 
-    const invoices = results?.map(({invoice,customers})=>{
+    if (orgId) {
+        results = await db
+            .select()
+            .from(Invoices)
+            .innerJoin(Customers, eq(Invoices.customerId, Customers.id))
+            .where(eq(Invoices.organizationId, orgId));
+    } else {
+        results = await db
+            .select()
+            .from(Invoices)
+            .innerJoin(Customers, eq(Invoices.customerId, Customers.id))
+            .where(and(eq(Invoices.userId, userId), isNull(Invoices.organizationId)));
+    }
+
+    const invoices = results?.map(({ invoice, customers }) => {
         return {
             ...invoice,
-            customer: customers
-        }
-    })
-    console.log("invoices",invoices)
+            customer: customers,
+        };
+    });
+    console.log("invoices", invoices);
 
     return (
         <main className="h-full ">
@@ -61,56 +72,68 @@ export default async function page() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {invoices.filter((result, idx, arr) => result?.id != null && arr.findIndex(r => r?.id === result.id) === idx).map((result) => {
-                            return (
-                                <TableRow key={result.id}>
-                                    <TableCell className="font-medium text-left p-0">
-                                        <Link
-                                            href={`/invoices/${result.id}`}
-                                            className="font-semibold block  p-4"
-                                        >
-                                            {new Date(result.createTs).toLocaleDateString()}
-                                        </Link>
-                                    </TableCell>
-                                    <TableCell className="text-left p-0">
-                                        <Link
-                                            href={`/invoices/${result.id}`}
-                                            className="font-semibold block p-4"
-                                        >
-                                            {result.customer.name}
-                                        </Link>
-                                    </TableCell>
-                                    <TableCell className="text-left p-0 ">
-                                        <Link href={`/invoices/${result.id}`} className="block p-4">
-                                            {result.customer.email}
-                                        </Link>
-                                    </TableCell>
-                                    <TableCell className="text-center p-0">
-                                        <Link href={`/invoices/${result.id}`} className="block p-4">
-                                            <Badge
-                                                className={cn(
-                                                    "rounded-full capitalize",
-                                                    result.status === "open" && "bg-green-500",
-                                                    result.status === "paid" && "bg-green-700",
-                                                    result.status === "void" && "bg-zinc-700",
-                                                    result.status === "uncollectible" && "bg-red-600"
-                                                )}
+                        {invoices
+                            .filter(
+                                (result, idx, arr) =>
+                                    result?.id != null &&
+                                    arr.findIndex((r) => r?.id === result.id) === idx
+                            )
+                            .map((result) => {
+                                return (
+                                    <TableRow key={result.id}>
+                                        <TableCell className="font-medium text-left p-0">
+                                            <Link
+                                                href={`/invoices/${result.id}`}
+                                                className="font-semibold block  p-4"
                                             >
-                                                {result.status}
-                                            </Badge>
-                                        </Link>
-                                    </TableCell>
-                                    <TableCell className="text-right p-0">
-                                        <Link
-                                            href={`/invoices/${result.id}`}
-                                            className="font-semibold block  p-4"
-                                        >
-                                            ${result.value / 100}
-                                        </Link>
-                                    </TableCell>
-                                </TableRow>
-                            );
-                        })}
+                                                {new Date(result.createTs).toLocaleDateString()}
+                                            </Link>
+                                        </TableCell>
+                                        <TableCell className="text-left p-0">
+                                            <Link
+                                                href={`/invoices/${result.id}`}
+                                                className="font-semibold block p-4"
+                                            >
+                                                {result.customer.name}
+                                            </Link>
+                                        </TableCell>
+                                        <TableCell className="text-left p-0 ">
+                                            <Link
+                                                href={`/invoices/${result.id}`}
+                                                className="block p-4"
+                                            >
+                                                {result.customer.email}
+                                            </Link>
+                                        </TableCell>
+                                        <TableCell className="text-center p-0">
+                                            <Link
+                                                href={`/invoices/${result.id}`}
+                                                className="block p-4"
+                                            >
+                                                <Badge
+                                                    className={cn(
+                                                        "rounded-full capitalize",
+                                                        result.status === "open" && "bg-green-500",
+                                                        result.status === "paid" && "bg-green-700",
+                                                        result.status === "void" && "bg-zinc-700",
+                                                        result.status === "uncollectible" && "bg-red-600"
+                                                    )}
+                                                >
+                                                    {result.status}
+                                                </Badge>
+                                            </Link>
+                                        </TableCell>
+                                        <TableCell className="text-right p-0">
+                                            <Link
+                                                href={`/invoices/${result.id}`}
+                                                className="font-semibold block  p-4"
+                                            >
+                                                ${result.value / 100}
+                                            </Link>
+                                        </TableCell>
+                                    </TableRow>
+                                );
+                            })}
                     </TableBody>
                 </Table>
             </Container>
