@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Customers, Invoices } from "@/db/schema";
 import { cn } from "@/lib/utils";
 import Container from "@/components/Container";
-import { Bomb, ChevronDown } from "lucide-react";
+import { Bomb, ChevronDown, CreditCard } from "lucide-react";
 import { useOptimistic } from "react";
 import {
   DropdownMenu,
@@ -25,8 +25,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import Link from "next/link";
 interface InvoiceProps {
-  invoice: typeof Invoices.$inferSelect & { customer: typeof Customers.$inferSelect}
+  invoice: typeof Invoices.$inferSelect & { customer: typeof Customers.$inferSelect }
 }
 export default function Invoice({ invoice }: InvoiceProps) {
   const [currentStatus, setCurrentStatus] = useOptimistic(
@@ -100,6 +101,12 @@ export default function Invoice({ invoice }: InvoiceProps) {
                         Delete Invoice <Bomb className="w-4 h-auto" />
                       </button>
                     </DialogTrigger>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+
+                    <Link href={`/invoices/${invoice.id}/payment`} className="flex gap-2 items-center">
+                      Payment <CreditCard className="w-4 h-auto" />
+                    </Link>
 
                   </DropdownMenuItem>
                 </DropdownMenuContent>

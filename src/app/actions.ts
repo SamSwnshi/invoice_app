@@ -6,6 +6,10 @@ import { redirect } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
 import { and, eq, isNull } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import Stripe from 'stripe'
+
+
+const stripe = new Stripe(String(process.env.STRIPE_API_SECRET))
 
 export async function createAction(formData: FormData) {
   const { userId, ordId } = await auth();
@@ -82,25 +86,31 @@ export async function updateStatusAction(formData: FormData) {
   revalidatePath(`/invoices/${id}`, "page");
 }
 export async function deleteInvoiceActions(formData: FormData) {
-  const { userId,orgId } = await auth();
+  const { userId, orgId } = await auth();
 
   if (!userId) {
     return;
   }
 
   const id = formData.get("id") as string;
-  let results
-    if (orgId) {
-     results = await db
-    .delete(Invoices)
-    .where(and(eq(Invoices.id, parseInt(id)), eq(Invoices.organizationId, orgId)));
+  let results;
+  if (orgId) {
+    results = await db
+      .delete(Invoices)
+      .where(
+        and(eq(Invoices.id, parseInt(id)), eq(Invoices.organizationId, orgId))
+      );
   } else {
-     results = await db
-    .delete(Invoices)
-    .where(and(eq(Invoices.id, parseInt(id)), eq(Invoices.userId, userId),isNull(Invoices.organizationId)));
+    results = await db
+      .delete(Invoices)
+      .where(
+        and(
+          eq(Invoices.id, parseInt(id)),
+          eq(Invoices.userId, userId),
+          isNull(Invoices.organizationId)
+        )
+      );
   }
-
-  
 
   console.log("results", results);
   redirect("/dashboard");
