@@ -9,6 +9,7 @@ import { and, eq } from "drizzle-orm";
 import { db } from "@/db";
 import { Button } from "@/components/ui/button";
 import { Check, CreditCard } from "lucide-react";
+import { createPayment } from "@/app/actions";
 
 export default async function Invoice({
     params,
@@ -72,7 +73,8 @@ export default async function Invoice({
                     <div>
                         <h2 className="text-2xl fond-bold mb-4">Manage Invoice</h2>
                         {invoices.status === 'open' && (
-                            <form>
+                            <form action={createPayment}>
+                                <input type="hidden" name="id" value={invoices.id}/>
                                 <Button className="flex gap-2 font-bold bg-green-800">
                                     <CreditCard className="w-5 h-auto" />
                                     Pay Invoice
