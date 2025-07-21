@@ -119,7 +119,7 @@ export async function deleteInvoiceActions(formData: FormData) {
 }
 
 export async function createPayment(formData:FormData){
-  const headersList = headers();
+  const headersList = await headers();
   const origin =  headersList.get('origin')
   const id = parseInt(formData.get('id') as string)
 

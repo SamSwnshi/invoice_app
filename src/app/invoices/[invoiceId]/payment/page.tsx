@@ -10,9 +10,12 @@ import { db } from "@/db";
 import { Button } from "@/components/ui/button";
 import { Check, CreditCard } from "lucide-react";
 import { createPayment } from "@/app/actions";
+interface InvoicePageProps{
+    params: {invoiceId: string}
+}
 
 export default async function Invoice({
-    params,
+    params,searchParams
 }: {
     params: { invoiceId: string };
 }) {
