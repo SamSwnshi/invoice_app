@@ -44,7 +44,7 @@ export default function Invoice({ invoice }: InvoiceProps) {
       await updateStatusAction(formData);
     } catch (_) {
       setCurrentStatus(originalStatus);
-      // error intentionally ignored
+    
       console.log(_)
     }
   }
