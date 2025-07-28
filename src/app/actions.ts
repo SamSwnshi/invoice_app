@@ -143,8 +143,8 @@ export async function createPayment(formData:FormData){
         }
       ],
       mode: 'payment',
-      success_url: `${origin}/invoices/${id}/payment?success=true`,
-      cancel_url: `${origin}/invoices/${id}/payment/?canceled=false`
+      success_url: `${origin}/invoices/${id}/payment?status=success&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${origin}/invoices/${id}/payment?status=canceled&session_id={CHECKOUT_SESSION_ID}`
     })
 
     console.log('result',result)
